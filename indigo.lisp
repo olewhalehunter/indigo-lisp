@@ -76,3 +76,35 @@
 						 args))
 			`(,left ,right)))
 		)))))
+
+(defun function-typespec (name)
+  ;; needs portability (function-information ...)
+  (sb-kernel:type-specifier (sb-c::info :function :type name)))
+
+(defmacro def-valuetype (name supertype)
+  `(let ((type-cell '(*type* ,name ,supertype)))
+     (deftype ,name () '(satisfies ,(s+ 'type- name 'p)))
+     (defun ,(s+ 'type- name 'p) (x) (equal x type-cell))
+     (setf (get '*type-signatures* (quote ,name)) (quote ,supertype))
+     (setq ,name type-cell)))
+
+(defun type-of-valuetype (valuetype)
+  (third valuetype))
+
+(defun set-type-signature (name signature)
+  (setf (get '*type-signatures* name) signature))
+
+(defun type-signature (function)
+  (cond ((symbolp function) (get '*type-signatures* function))
+	((listp function)
+	 (let* ((function (compose-format function))
+		(root-function (first function))
+		(root-signature (type-signature root-function))
+		(args (rest function)))
+	   (if (check-type-s (eval (first args)) (first root-signature))
+	       (let ((type-signature 
+		      (type-list-format (remove (first root-signature)
+						root-signature :count 1))))
+		 type-signature)
+	       )))
+	(t (error "undefined TYPE-SIGNATURE"))))
