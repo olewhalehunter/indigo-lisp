@@ -1,6 +1,32 @@
 ;; Indigo Common Lisp
 ;; Algebraic Data Types, Pattern Matching, Strong Static Typing
 
+(defun c+ (&rest strs)
+  (apply 'concatenate
+	 (append '(string)
+		 (mapcar (lambda (x)
+			   (if (symbolp x) (symbol-name x) x))
+			 strs))))
+
+(defun s+ (&rest symbols)
+  (intern (apply 'c+ symbols)))
+
+(defun type-list-format (x)  
+  (if (and (listp x) (= (length x) 1))
+	  (first x)
+	  x))
+
+(defun compose-format (flat-list)
+  "'(a b c) -> '((a b) c), 'a -> 'a"
+  (if (listp flat-list)
+      (if (> (length flat-list) 2)
+	  (append (list (compose-format (butlast flat-list)))
+		  (last flat-list))
+	  (if (= (length flat-list) 2)
+	      (subseq flat-list 0 2)
+	      flat-list))
+      flat-list))
+
 (defun subst-cons-lambda (new-lambda old-lambda cell)
   (if (and cell (listp cell))
       (if (funcall old-lambda cell)
