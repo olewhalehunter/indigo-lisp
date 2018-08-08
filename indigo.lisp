@@ -38,6 +38,7 @@
 			(car cell)))
 		(subst-cons-lambda new-lambda old-lambda (cdr cell))))))
 
+
 (defmacro data (type &rest constructors)
   `(progn
        (setq subtypes
@@ -60,12 +61,15 @@
 		     (let* ((field-name (first c))
 			    (field-args (rest c))
 			    (field-typep (s+ 'type- field-name 'p))
+			    (supertype (quote ,type))
 			    (arg-ids (loop
 					for arg in field-args
-					for n below (length field-args)
+					for n from 0 to (length field-args)
 					collect (s+ arg '- n))))
 		       (eval
 			`(progn
+			   (declaim (ftype (function (,@field-args) ,supertype)
+					   ,field-name))
 			   (defun ,field-name ,arg-ids
 			     (list ,@arg-ids))
 			   (defun ,field-typep (x)
@@ -74,7 +78,7 @@
 				  (= (length x) (length (quote ,field-args)))
 				  ,@(loop
 				       for a in field-args
-				       for n below (length field-args)
+				       for n from 0 to (length field-args)
 				       collect
 					 `(typep (nth ,n x) (quote ,a))
 					 )))
@@ -87,6 +91,7 @@
 		    )))
        (deftype ,type () `(or ,@subtypes))
        ))
+
 
 (defmacro check-type-s (x typespec)
   "equivalent of CHECK-TYPE macro but with TYPESPEC as SYMBOL"

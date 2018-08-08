@@ -23,11 +23,13 @@ Languages built around type-driven development and pattern matching gain the fol
 see Bob Krzaczek's ["Performance and Types in Lisp"](https://blog.30dor.com/2014/03/21/performance-and-types-in-lisp/)
 
 # TODO
-* add declaims and gadt type sigs to constructor and def macros
+* gadt type sigs in constructor and def macros
 * literal and wildcard pattern match in PATTERN-REWRITE
 * parametric function type checking
 * custom CHECK-TYPE error messages for GADTs
 * record format + accessors for data definitions
+* tests, type check failure tests
+* tutorial in readme
 * emacs mode, definition syntax/type capitals highlight/indent
 * Total Function verification
 * add more features from Haskell
