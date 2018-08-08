@@ -1,3 +1,5 @@
+(in-package :indigo)
+
 (data Tree
       Empty
       (Leaf Integer)

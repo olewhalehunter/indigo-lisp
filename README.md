@@ -23,15 +23,20 @@ Languages built around type-driven development and pattern matching gain the fol
 see Bob Krzaczek's ["Performance and Types in Lisp"](https://blog.30dor.com/2014/03/21/performance-and-types-in-lisp/)
 
 # TODO
-* gadt type sigs in constructor and def macros
+* fix issue with package scope of SUBTYPES in DATA macro
+* build + test passing workflow
+* partial eval compose + check composed func type
 * literal and wildcard pattern match in PATTERN-REWRITE
-* parametric function type checking
+* parametric types, range/native CL compound types
 * custom CHECK-TYPE error messages for GADTs
+* more advanced type inference (unification), backend Prolog unifier? type predicates?
+* &rest native function typing https://stackoverflow.com/questions/19485248/what-do-optional-and-rest-mean-in-a-values-type-specifier
 * record format + accessors for data definitions
-* tests, type check failure tests
+* full tests, type check failure tests
 * tutorial in readme
+* clean up DATA macro
 * emacs mode, definition syntax/type capitals highlight/indent
 * Total Function verification
-* add more features from Haskell
+* more advanced features from Haskell definitions
 * profile generated functions
 * function def type inference
