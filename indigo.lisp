@@ -38,19 +38,55 @@
 			(car cell)))
 		(subst-cons-lambda new-lambda old-lambda (cdr cell))))))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;
-;; ADT work-in-progress and testing
-
-(defmacro data (name &rest fields)
-  `(defstruct ,name
-     ,@(loop for field in fields collect
-	    (d-bind (name type)
-		    field		    
-		    `(,name nil :type
-			    ,(if (listp type)
-				 'cons
-				 type))))))
+(defmacro data (type &rest constructors)
+  `(progn
+       (setq subtypes
+	     (loop for c in (quote ,constructors) collect
+		  (case (type-of c)
+		    ('symbol
+		     (let* ((name c)
+			    (supertype (quote ,type))
+			    (type-cell `(*type* ,name ,supertype)))
+		       (eval
+			`(progn
+			   (deftype ,name ()
+			     '(satisfies ,(s+ 'type- name 'p)))
+			   (defun ,(s+ 'type- name 'p) (x)
+			     (equal x (quote ,type-cell)))))
+		       (setf (get '*type-signatures* name) supertype)
+		       (set name type-cell))
+		     c)
+		    ('cons
+		     (let* ((field-name (first c))
+			    (field-args (rest c))
+			    (field-typep (s+ 'type- field-name 'p))
+			    (arg-ids (loop
+					for arg in field-args
+					for n from 0 to (length field-args)
+					collect (s+ arg '- n))))
+		       (eval
+			`(progn
+			   (defun ,field-name ,arg-ids
+			     (list ,@arg-ids))
+			   (defun ,field-typep (x)
+			     (and x
+				  (listp x)
+				  (= (length x) (length (quote ,field-args)))
+				  ,@(loop
+				       for a in field-args
+				       for n from 0 to (length field-args)
+				       collect
+					 `(typep (nth ,n x) (quote ,a))
+					 )))
+			   (deftype ,field-name ()
+			     '(satisfies ,field-typep))			   
+			   ))
+		       (set-type-signature field-name
+					   (append field-args (list (quote ,type))))
+		       field-name))
+		    )))
+       (deftype ,type () `(or ,@subtypes))
+       ))
 
 (defmacro check-type-s (x typespec)
   "equivalent of CHECK-TYPE macro but with TYPESPEC as SYMBOL"
@@ -62,11 +98,6 @@
       (or (check-type-s (car cell) type)
 	  (check-type-list (cdr cell) type))))
 
-(defun nilcadrp (x) (null (cadr x)))
-
-
-;; end ADT work-in progress
-;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun pattern-rewrite (left right input)
   (if (atom right)
