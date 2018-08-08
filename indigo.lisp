@@ -1,15 +1,83 @@
 ;; Indigo Common Lisp
 ;; Algebraic Data Types, Pattern Matching, Strong Static Typing
 
-(defun c+ (&rest strs)
-  (apply 'concatenate
-	 (append '(string)
-		 (mapcar (lambda (x)
-			   (if (symbolp x) (symbol-name x) x))
-			 strs))))
+(in-package :indigo)
 
-(defun s+ (&rest symbols)
-  (intern (apply 'c+ symbols)))
+(eval-when 
+    (:compile-toplevel)
+  
+  (declaim (sb-ext:muffle-conditions cl:warning))
+  
+  (defun c+ (&rest strs)
+    (apply 'concatenate
+	   (append
+	    '(string)
+	    (mapcar (lambda (x)
+		      (if (numberp x)
+			  (write-to-string x)
+			  (if (symbolp x)
+			      (symbol-name x)
+			      x)))
+		    strs))))
+  
+  (defun s+ (&rest symbols)
+    (intern (apply 'c+ symbols)))
+
+  (defmacro data (type &rest constructors)
+    `(progn
+       (defvar subtypes
+	      (loop for c in (quote ,constructors) collect
+		   (case (type-of c)
+		     ('symbol
+		      (let* ((name c)
+			     (supertype (quote ,type))
+			     (type-cell `(*type* ,name ,supertype)))
+			(eval
+			 `(progn
+			    (deftype ,name ()
+			      '(satisfies ,(s+ 'type- name 'p)))
+			    (defun ,(s+ 'type- name 'p) (x)
+			      (equal x (quote ,type-cell)))))
+			(setf (get '*type-signatures* name) supertype)
+			(set name type-cell))
+		      c)
+		     ('cons
+		      (let* ((field-name (first c))
+			     (field-args (rest c))
+			     (field-typep (s+ 'type- field-name 'p))
+			     (supertype (quote ,type))
+			     (arg-ids (loop
+					 for arg in field-args
+					 for n from 0 to (length field-args)
+					 collect (s+ arg '- n))))
+			(eval
+			 `(progn
+			    (declaim (ftype (function (,@field-args) ,supertype)
+					    ,field-name))
+			    (defun ,field-name ,arg-ids
+			      (list ,@arg-ids))
+			    (defun ,field-typep (x)
+			      (and x
+				   (listp x)
+				   (= (length x) (length (quote ,field-args)))
+				   ,@(loop
+					for a in field-args
+					for n from 0 to (length field-args)
+					collect
+					  `(typep (nth ,n x) (quote ,a))
+					  )))
+			    (deftype ,field-name ()
+			      '(satisfies ,field-typep))			   
+			    ))
+			(set-type-signature field-name
+					    (append field-args (list (quote ,type))))
+			field-name))
+		     )))
+	 (deftype ,type () `(or ,@subtypes))
+       ))
+  
+  )
+
 
 (defun type-list-format (x)  
   (if (and (listp x) (= (length x) 1))
@@ -38,59 +106,6 @@
 			(car cell)))
 		(subst-cons-lambda new-lambda old-lambda (cdr cell))))))
 
-
-(defmacro data (type &rest constructors)
-  `(progn
-       (setq subtypes
-	     (loop for c in (quote ,constructors) collect
-		  (case (type-of c)
-		    ('symbol
-		     (let* ((name c)
-			    (supertype (quote ,type))
-			    (type-cell `(*type* ,name ,supertype)))
-		       (eval
-			`(progn
-			   (deftype ,name ()
-			     '(satisfies ,(s+ 'type- name 'p)))
-			   (defun ,(s+ 'type- name 'p) (x)
-			     (equal x (quote ,type-cell)))))
-		       (setf (get '*type-signatures* name) supertype)
-		       (set name type-cell))
-		     c)
-		    ('cons
-		     (let* ((field-name (first c))
-			    (field-args (rest c))
-			    (field-typep (s+ 'type- field-name 'p))
-			    (supertype (quote ,type))
-			    (arg-ids (loop
-					for arg in field-args
-					for n from 0 to (length field-args)
-					collect (s+ arg '- n))))
-		       (eval
-			`(progn
-			   (declaim (ftype (function (,@field-args) ,supertype)
-					   ,field-name))
-			   (defun ,field-name ,arg-ids
-			     (list ,@arg-ids))
-			   (defun ,field-typep (x)
-			     (and x
-				  (listp x)
-				  (= (length x) (length (quote ,field-args)))
-				  ,@(loop
-				       for a in field-args
-				       for n from 0 to (length field-args)
-				       collect
-					 `(typep (nth ,n x) (quote ,a))
-					 )))
-			   (deftype ,field-name ()
-			     '(satisfies ,field-typep))			   
-			   ))
-		       (set-type-signature field-name
-					   (append field-args (list (quote ,type))))
-		       field-name))
-		    )))
-       (deftype ,type () `(or ,@subtypes))
-       ))
 
 
 (defmacro check-type-s (x typespec)
