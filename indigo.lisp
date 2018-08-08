@@ -62,7 +62,7 @@
 			    (field-typep (s+ 'type- field-name 'p))
 			    (arg-ids (loop
 					for arg in field-args
-					for n from 0 to (length field-args)
+					for n below (length field-args)
 					collect (s+ arg '- n))))
 		       (eval
 			`(progn
@@ -74,7 +74,7 @@
 				  (= (length x) (length (quote ,field-args)))
 				  ,@(loop
 				       for a in field-args
-				       for n from 0 to (length field-args)
+				       for n below (length field-args)
 				       collect
 					 `(typep (nth ,n x) (quote ,a))
 					 )))
@@ -102,7 +102,7 @@
 (defun pattern-rewrite (left right input)
   (if (atom right)
       right
-      (let* ((args (rest left))	 
+      (let* ((args (rest left))
 	     (right-rewrite
 	      (subst-cons-lambda (lambda (x) (list '_rewrite_ x))
 				 (lambda (x) (member x args))
@@ -116,23 +116,26 @@
 		      (eq (first x) '_rewrite_)))
 	       right-rewrite)))))
 
+
 (defmacro def (name &rest patterns)
   `(defun ,name (args)
      (typecase args
-       ,@(loop for p in patterns collect
-	      (let* ((left (first p))
-		     (right (second p))
-		     (type (if (listp left)
-			       (first left)
-			       (type-of left))))
-		(if (eq left 'null)
-		    `(null ,right)
-		    (if (listp left)
-			`(,type (pattern-rewrite (quote ,left)
-						 (quote ,right)
-						 args))
-			`(,left ,right)))
-		)))))
+       ,@(loop for i below (length patterns)
+	    for left = (nth i patterns)
+	    for right = (nth (incf i) patterns)
+	    for type = (if (listp left)
+			   (first left)
+			   (type-of left))
+	    collect
+	      (if (eq left 'null)
+		  `(null ,right)
+		  (if (listp left)
+		      `(,type (pattern-rewrite (quote ,left)
+					       (quote ,right)
+					       args))
+		      `(,left ,right)))
+	      ))))
+
 
 (defun function-typespec (name)
   ;; needs portability (function-information ...)

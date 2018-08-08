@@ -4,11 +4,10 @@
       (Branch Tree Tree))
 
 (def depth
-  ( Empty 0)
-  ( (Leaf n) 1 )
-  ( (Branch l r) (+ 1 (max (depth l)
-			   (depth r)))))
-
+    Empty 0
+    (Leaf n) 1
+    (Branch l r) (+ 1 (max (depth l)
+			   (depth r))))
 
 
 (typep Empty 'Tree)

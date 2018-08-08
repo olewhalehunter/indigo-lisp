@@ -27,6 +27,7 @@ see Bob Krzaczek's ["Performance and Types in Lisp"](https://blog.30dor.com/2014
 * literal and wildcard pattern match in PATTERN-REWRITE
 * parametric function type checking
 * custom CHECK-TYPE error messages for GADTs
+* record format + accessors for data definitions
 * emacs mode, definition syntax/type capitals highlight/indent
 * Total Function verification
 * add more features from Haskell
