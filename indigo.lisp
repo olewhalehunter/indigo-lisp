@@ -4,8 +4,10 @@
 (in-package :indigo)
 
 (eval-when 
-    (:compile-toplevel)
-  
+    (:compile-toplevel
+     :load-toplevel
+     :execute)
+  (in-package :indigo)
   (declaim (sb-ext:muffle-conditions cl:warning))
   
   (defun c+ (&rest strs)
@@ -75,7 +77,6 @@
 		     )))
 	 (deftype ,type () `(or ,@subtypes))
        ))
-  
   )
 
 

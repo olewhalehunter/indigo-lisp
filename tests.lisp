@@ -17,7 +17,6 @@
 (typep (Branch (Leaf 2) (Leaf 4)) 'Tree)
 (typep (Branch Empty Empty) 'Tree)
 
-
 (depth Empty)
 (depth (Leaf 7))
 (depth (Branch Empty Empty))

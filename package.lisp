@@ -15,4 +15,5 @@
 	   #:compose-format
 	   #:c+
 	   #:s+
+	   #:subtypes
 	   ))
