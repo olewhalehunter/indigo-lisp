@@ -3,8 +3,7 @@
     :author "Anders Puckett <andersenpuckett@gmail.com>"
     :license "GNU AGPLv3"
     :serial t
-    ;; :depends-on (#:binary-types)
-    :components ((:file "indigo")
-		 (:file "tests")
-		 )
+    :depends-on (#:prove)
+    :components ((:file "indigo"))
     )
+    

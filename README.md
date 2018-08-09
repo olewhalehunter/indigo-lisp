@@ -23,7 +23,6 @@ Languages built around type-driven development and pattern matching gain the fol
 see Bob Krzaczek's ["Performance and Types in Lisp"](https://blog.30dor.com/2014/03/21/performance-and-types-in-lisp/)
 
 # TODO
-* fix issue with package scope of SUBTYPES in DATA macro
 * build + test passing workflow
 * partial eval compose + check composed func type
 * literal and wildcard pattern match in PATTERN-REWRITE

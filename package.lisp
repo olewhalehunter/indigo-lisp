@@ -1,5 +1,5 @@
 (defpackage #:indigo
-  (:use #:cl)
+  (:use #:cl #:prove)
   (:documentation "Algebraic Data Types, Pattern Matching, and Strong Static Typing on Common Lisp.")
   (:export #:def
            #:data
@@ -9,6 +9,8 @@
 	   #:set-type-signature	   
 	   #:check-type-s
 	   #:check-type-list
+
+	   #:run-tests
 	   
 	   #:pattern-rewrite
 	   #:subst-cons-lambda
