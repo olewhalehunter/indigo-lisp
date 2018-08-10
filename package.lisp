@@ -8,6 +8,7 @@
 	   :def-valuetype
 	   :type-of-valuetype
 	   :type-signature
+	   :function-typespec
 	   :set-type-signature	   
 	   :check-type-s
 	   :check-type-list

@@ -3,8 +3,9 @@
 
 (in-package :indigo)
 
-(eval-when (:load-toplevel)  
-  (declaim (sb-ext:muffle-conditions cl:warning))
+(eval-when (:compile-toplevel
+	    :load-toplevel
+	    :execute)
   
   (defun c+ (&rest strs)
     (apply 'concatenate
@@ -72,7 +73,7 @@
 		 )))
     `(progn       
        (deftype ,type () `(or ,@(get 'subtypes (quote ,type))))
-       ))
+       ))  
   )
 
 
@@ -104,17 +105,16 @@
 		(subst-cons-lambda new-lambda old-lambda (cdr cell))))))
 
 
-
 (defmacro check-type-s (x typespec)
-  "equivalent of CHECK-TYPE macro but with TYPESPEC as SYMBOL"
-  `(assert (typep ,x ,typespec) (x)
-	   'type-error :datum ,x :expected-type ,typespec))
+  "equivalent of CHECK-TYPE macro but with TYPESPEC as SYMBOL and returning T if valid"
+  `(not (assert (typep ,x ,typespec) (x)
+		'type-error :datum ,x :expected-type ,typespec)))
 
 (defun check-type-list (cell type)  
-  (if (not (endp cell))
-      (or (check-type-s (car cell) type)
-	  (check-type-list (cdr cell) type))))
-
+  (if (endp cell)
+      t
+      (and (check-type-s (car cell) type)
+	   (check-type-list (cdr cell) type))))
 
 (defun pattern-rewrite (left right input)
   (if (atom right)
@@ -134,9 +134,9 @@
 	       right-rewrite)))))
 
 
-(defmacro def (name &rest patterns)
+(defmacro def (name &rest patterns)  
   (if (oddp (length patterns))
-      (error "odd number of left/right pattern terms in DEF body"))
+      (error "odd number of left/right pattern terms in DEF body"))  
   `(defun ,name (args)
      (typecase args
        ,@(loop for i below (length patterns)
