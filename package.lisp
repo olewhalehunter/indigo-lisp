@@ -11,8 +11,6 @@
 	   :set-type-signature	   
 	   :check-type-s
 	   :check-type-list
-
-	   :run-tests
 	   
 	   :pattern-rewrite
 	   :subst-cons-lambda

@@ -1,5 +1,3 @@
-;; (prove:run #P"test/tree.lisp" :reporter :tap)
-
 (in-package :indigo.tests)
 
 (plan nil)
