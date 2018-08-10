@@ -1,11 +1,9 @@
 ;; Indigo Common Lisp
 ;; Algebraic Data Types, Pattern Matching, Strong Static Typing
 
-(eval-when 
-    (:compile-toplevel
-     :load-toplevel
-     :execute)
-  (in-package :indigo)
+(in-package :indigo)
+
+(eval-when (:load-toplevel)  
   (declaim (sb-ext:muffle-conditions cl:warning))
   
   (defun c+ (&rest strs)
@@ -21,59 +19,59 @@
 		    strs))))
   
   (defun s+ (&rest symbols)
-    (intern (apply 'c+ symbols)))
+    (intern (apply 'c+ symbols)))  
 
   (defmacro data (type &rest constructors)
-    `(progn
-       (defvar subtypes
-	 (loop for c in (quote ,constructors) collect
-	      (case (type-of c)
-		('symbol
-		 (let* ((name c)
-			(supertype (quote ,type))
-			(type-cell `(*type* ,name ,supertype)))
-		   (eval
-		    `(progn
-		       (deftype ,name ()
-			 '(satisfies ,(s+ 'type- name 'p)))
-		       (defun ,(s+ 'type- name 'p) (x)
-			 (equal x (quote ,type-cell)))))
-		   (setf (get '*type-signatures* name) supertype)
-		   (set name type-cell))
-		 c)
-		('cons
-		 (let* ((field-name (first c))
-			(field-args (rest c))
-			(field-typep (s+ 'type- field-name 'p))
-			(supertype (quote ,type))
-			(arg-ids (loop
-				    for arg in field-args
+    (setf (get 'subtypes type)
+	  (loop for c in constructors collect
+	       (case (type-of c)
+		 ('symbol
+		  (let* ((name c)
+			 (supertype type)
+			 (type-cell `(*type* ,name ,supertype)))
+		    (eval
+		     `(progn
+			(deftype ,name ()
+			  '(satisfies ,(s+ 'type- name 'p)))
+			(defun ,(s+ 'type- name 'p) (x)
+			  (equal x (quote ,type-cell)))))
+		    (setf (get '*type-signatures* name) supertype)
+		    (set name type-cell))
+		  c)
+		 ('cons
+		  (let* ((field-name (first c))
+			 (field-args (rest c))
+			 (field-typep (s+ 'type- field-name 'p))
+			 (supertype type)
+			 (arg-ids (loop
+				     for arg in field-args
+				     for n from 0 to (length field-args)
+				     collect (s+ arg '- n))))
+		    (eval
+		     `(progn
+			(declaim (ftype (function (,@field-args) ,supertype)
+					,field-name))
+			(defun ,field-name ,arg-ids
+			  (list ,@arg-ids))
+			(defun ,field-typep (x)
+			  (and x
+			       (listp x)
+			       (= (length x) (length (quote ,field-args)))
+			       ,@(loop
+				    for a in field-args
 				    for n from 0 to (length field-args)
-				    collect (s+ arg '- n))))
-		   (eval
-		    `(progn
-		       (declaim (ftype (function (,@field-args) ,supertype)
-				       ,field-name))
-		       (defun ,field-name ,arg-ids
-			 (list ,@arg-ids))
-		       (defun ,field-typep (x)
-			 (and x
-			      (listp x)
-			      (= (length x) (length (quote ,field-args)))
-			      ,@(loop
-				   for a in field-args
-				   for n from 0 to (length field-args)
-				   collect
-				     `(typep (nth ,n x) (quote ,a))
-				     )))
-		       (deftype ,field-name ()
-			 '(satisfies ,field-typep))			   
-		       ))
-		   (set-type-signature field-name
-				       (append field-args (list (quote ,type))))
-		   field-name))
-		)))
-       (deftype ,type () `(or ,@subtypes))
+				    collect
+				      `(typep (nth ,n x) (quote ,a))
+				      )))
+			(deftype ,field-name ()
+			  '(satisfies ,field-typep))			   
+			))
+		    (set-type-signature field-name
+					(append field-args (list type)))
+		    field-name))
+		 )))
+    `(progn       
+       (deftype ,type () `(or ,@(get 'subtypes (quote ,type))))
        ))
   )
 
@@ -189,9 +187,4 @@
 		 type-signature)
 	       )))
 	(t (error "undefined TYPE-SIGNATURE"))))
-
-(defun run-tests ()
-  (if (prove:run #P"test/tree.lisp" :reporter :tap)
-      (print "All tests passed")      
-      ))
       

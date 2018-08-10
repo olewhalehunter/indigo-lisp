@@ -1,6 +1,6 @@
 ;; (prove:run #P"test/tree.lisp" :reporter :tap)
 
-(in-package :indigo)
+(in-package :indigo.tests)
 
 (plan nil)
 
@@ -20,7 +20,6 @@
 			      (depth r))))
    ))
   
-
 
 (subtest "Testing Type Predicates"
   (ok (typep Empty 'Tree))
