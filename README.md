@@ -22,12 +22,16 @@ Languages built around type-driven development and pattern matching gain the fol
 
 see Bob Krzaczek's ["Performance and Types in Lisp"](https://blog.30dor.com/2014/03/21/performance-and-types-in-lisp/)
 
+# TODO
+
+* clarify goals for Indigo CL
+* type inference (unification), backend Prolog unifier? type predicates?
+* compile time type checks in DEF during macroexpansion
 * partial eval compose + check composed func type
 * literal and wildcard pattern match in PATTERN-REWRITE
-* parametric types, range/native CL compound types
-* custom CHECK-TYPE error messages for GADTs
-* more advanced type inference (unification), backend Prolog unifier? type predicates?
-* &rest native function typing https://stackoverflow.com/questions/19485248/what-do-optional-and-rest-mean-in-a-values-type-specifier
+* parametric types (List, Graph), range/native CL compound types
+* lisp compiler safety optimization https://stackovyerflow.com/questions/32321054/using-declare-type-but-still-have-safe-functions and compiler macro support https://github.com/Bike/compiler-macro
+* &rest native function typing https://stackoverflow.com/questions/19485248/what-do-optional-and-rest-mean-in-a-values-type-specifier https://stackoverflow.com/questions/43010732/lisp-sbcl-declare-a-function-argument-to-be-a-list-of-a-certain-type-for-type-ch?rq=1
 * record format + accessors for data definitions
 * full tests, type check failure tests
 * tutorial in readme
@@ -36,4 +40,4 @@ see Bob Krzaczek's ["Performance and Types in Lisp"](https://blog.30dor.com/2014
 * Total Function verification
 * more advanced features from Haskell definitions
 * profile generated functions
-* function def type inference
+* &environment support
