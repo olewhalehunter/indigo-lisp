@@ -25,9 +25,10 @@ see Bob Krzaczek's ["Performance and Types in Lisp"](https://blog.30dor.com/2014
 # TODO
 
 * clarify goals for Indigo CL
-* type inference (unification), backend Prolog unifier? type predicates?
+* type inference (unification with Gambol prolog)
 * compile time type checks in DEF during macroexpansion
 * partial eval compose + check composed func type
+* multi arg pattern match ((RGB r1 g1 b1) (RGB r2 g2 b2)) (RGB (+ r1 r2)...)
 * literal and wildcard pattern match in PATTERN-REWRITE
 * parametric types (List, Graph), range/native CL compound types
 * lisp compiler safety optimization https://stackovyerflow.com/questions/32321054/using-declare-type-but-still-have-safe-functions and compiler macro support https://github.com/Bike/compiler-macro
@@ -41,3 +42,4 @@ see Bob Krzaczek's ["Performance and Types in Lisp"](https://blog.30dor.com/2014
 * more advanced features from Haskell definitions
 * profile generated functions
 * &environment support
+* formal verification of programs (atop gambol?)
