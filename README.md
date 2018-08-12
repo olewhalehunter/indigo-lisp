@@ -22,24 +22,26 @@ Languages built around type-driven development and pattern matching gain the fol
 
 see Bob Krzaczek's ["Performance and Types in Lisp"](https://blog.30dor.com/2014/03/21/performance-and-types-in-lisp/)
 
-# TODO
+# Short Term TODO
 
-* clarify goals for Indigo CL
-* type inference (unification with Gambol prolog)
+* parametric types (List, Graph)
+* type inference of DEF's (unification with Gambol prolog or https://common-lisp.net/project/cl-unification/)
 * compile time type checks in DEF during macroexpansion
 * partial eval compose + check composed func type
 * multi arg pattern match ((RGB r1 g1 b1) (RGB r2 g2 b2)) (RGB (+ r1 r2)...)
 * literal and wildcard pattern match in PATTERN-REWRITE
-* parametric types (List, Graph), range/native CL compound types
-* lisp compiler safety optimization https://stackovyerflow.com/questions/32321054/using-declare-type-but-still-have-safe-functions and compiler macro support https://github.com/Bike/compiler-macro
-* &rest native function typing https://stackoverflow.com/questions/19485248/what-do-optional-and-rest-mean-in-a-values-type-specifier https://stackoverflow.com/questions/43010732/lisp-sbcl-declare-a-function-argument-to-be-a-list-of-a-certain-type-for-type-ch?rq=1
-* record format + accessors for data definitions
-* full tests, type check failure tests
+* record format accessors for type definitions
 * tutorial in readme
+* native CL compound types/ranges
+
+# Long Term TODO
+
+* lisp compiler optimization https://stackovyerflow.com/questions/32321054/using-declare-type-but-still-have-safe-functions and compiler macro support https://github.com/Bike/compiler-macro
+* &rest native function typing https://stackoverflow.com/questions/19485248/what-do-optional-and-rest-mean-in-a-values-type-specifier https://stackoverflow.com/questions/43010732/lisp-sbcl-declare-a-function-argument-to-be-a-list-of-a-certain-type-for-type-ch?rq=1
 * clean up DATA macro
 * emacs mode, definition syntax/type capitals highlight/indent
 * Total Function verification
-* more advanced features from Haskell definitions
 * profile generated functions
 * &environment support
-* formal verification of programs (atop gambol?)
+* formal verification of programs (atop gambol backend?)
+* other features from Haskell
