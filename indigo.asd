@@ -4,7 +4,10 @@
     :author "Anders Puckett <andersenpuckett@gmail.com>"
     :license "GNU AGPLv3"
     :serial t
-    :components ((:file "indigo"))
+    :depends-on ("gambol")
+    :components ((:file "indigo")
+		 (:file "typing"))
+
     )
 
 (asdf:defsystem :indigo.tests

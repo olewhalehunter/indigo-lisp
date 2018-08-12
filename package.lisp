@@ -1,7 +1,8 @@
 (in-package :cl-user)
 
 (defpackage :indigo
-  (:use :cl)
+  (:use :cl
+	:gambol)
   (:documentation "Algebraic Data Types, Pattern Matching, and Strong Static Typing on Common Lisp.")
   (:export :def
            :data
